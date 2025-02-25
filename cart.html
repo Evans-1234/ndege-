@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="cart.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Shopping Cart</h1>
+            <nav>
+                <a href="home.html">Home</a>
+                <a href="trial.html">Products</a>
+                <a href="cart.html">Cart</a>
+            </nav>
+        </div>
+    </header>
+    
+    <section id="cart" class="cart-section">
+        <h2>Your Cart</h2>
+        <div id="cart-items">
+            <!-- Cart items will be dynamically added here -->
+        </div>
+        <h3>Total: Ksh <span id="cart-total">0.00</span></h3>
+        
+        <div id="checkout-section">
+            <label for="phone-number">Enter Your Phone Number:</label>
+            <input type="text" id="phone-number" placeholder="e.g., 0712345678">
+            <button id="checkout-btn">Proceed to Payment</button>
+        </div>
+
+        <div id="receipt" style="display: none;">
+            <h2>Receipt</h2>
+            <p id="receipt-content"></p>
+            <p>Thank you for shopping with us!</p>
+        </div>
+    </section>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+            let cartContainer = document.getElementById("cart-items");
+            let totalAmount = 0;
+            
+            if (cartItems.length === 0) {
+                cartContainer.innerHTML = "<p>Your cart is empty.</p>";
+            } else {
+                let itemList = "<ul>";
+                cartItems.forEach(item => {
+                    itemList += `<li>${item.name} - Ksh ${item.price.toFixed(2)}</li>`;
+                    totalAmount += item.price;
+                });
+                itemList += "</ul>";
+                cartContainer.innerHTML = itemList;
+            }
+            
+            document.getElementById("cart-total").innerText = totalAmount.toFixed(2);
+            
+            document.getElementById("checkout-btn").addEventListener("click", function () {
+                let phoneNumber = document.getElementById("phone-number").value;
+                if (phoneNumber.trim() === "") {
+                    alert("Please enter your phone number to proceed.");
+                    return;
+                }
+                
+                let receiptContent = "You have purchased:<br><ul>";
+                cartItems.forEach(item => {
+                    receiptContent += `<li>${item.name} - Ksh ${item.price.toFixed(2)}</li>`;
+                });
+                receiptContent += `</ul><p>Total Amount: Ksh ${totalAmount.toFixed(2)}</p><p>Paid via phone number: ${phoneNumber}</p>`;
+                
+                document.getElementById("receipt-content").innerHTML = receiptContent;
+                document.getElementById("receipt").style.display = "block";
+                localStorage.removeItem("cart");
+            });
+        });
+    </script>
+</body>
+</html>
